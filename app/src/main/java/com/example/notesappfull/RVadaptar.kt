@@ -8,7 +8,7 @@ import com.example.notesappfull.databinding.ItemRowBinding
 
 
 
-class RVadaptar(val acticvity: MainActivity, var lis: ArrayList<NoteModel>):
+class RVadaptar(val acticvity: MainActivity, var lis: List<Note>):
     RecyclerView.Adapter<RVadaptar.ItemHold>() {
 
     class ItemHold (val binding: ItemRowBinding): RecyclerView.ViewHolder(binding.root)
@@ -25,20 +25,13 @@ class RVadaptar(val acticvity: MainActivity, var lis: ArrayList<NoteModel>):
     override fun onBindViewHolder(holder: ItemHold, position: Int) {
         val notes = lis[position]
         holder.binding.apply {
-            if (position % 2 == 0) {
-                llNoteHolder.setBackgroundColor(Color.GRAY)
-                txtNote.setTextColor(Color.WHITE)
-            } else {
-                llNoteHolder.setBackgroundColor(Color.WHITE)
-                txtNote.setTextColor(Color.BLACK)
-            }
-            ibEditNote.setOnClickListener {
-                acticvity.showDialog(notes)
-            }
-
             txtNote.text = notes.noteText
+            if(position%2==0){llNoteHolder.setBackgroundColor(Color.GRAY)}
+            ibEditNote.setOnClickListener {
+                acticvity.raiseDialog(notes.id)
+            }
             ibDeleteNote.setOnClickListener {
-                acticvity.confirm(notes)
+                acticvity.deleteNote(notes.id)
             }
 
         }
