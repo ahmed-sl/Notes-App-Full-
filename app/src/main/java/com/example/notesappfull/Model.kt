@@ -8,13 +8,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class Model (app: Application): AndroidViewModel(app) {
-    private val cor: NoteRepo
+
     private val notes: LiveData<List<Note>>
 
+    val cor = NoteDatabase.getDatabase(app)
+
     init {
-        val notedao = NoteDatabase.getDatabase(app).noteDao()
-        cor = NoteRepo(notedao)
-        notes = cor.getNotes
+
+        notes=cor.noteDao().getNotes()
     }
 
     fun getNotes(): LiveData<List<Note>> {
@@ -23,19 +24,19 @@ class Model (app: Application): AndroidViewModel(app) {
 
     fun addNote(noteText: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            cor.addNote(Note(0, noteText))
+            cor.noteDao().addNote(Note(0, noteText))
         }
     }
 
     fun editNote(noteID: Int, noteText: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            cor.updateNote(Note(noteID, noteText))
+            cor.noteDao().updateNote(Note(noteID, noteText))
         }
     }
 
     fun deleteNote(noteID: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            cor.deleteNote(Note(noteID, ""))
+            cor.noteDao().deleteNote(Note(noteID, ""))
         }
     }
 }

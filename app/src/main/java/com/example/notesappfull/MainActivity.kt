@@ -22,7 +22,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var edNewNote: EditText
     lateinit var btnSubmit: Button
     lateinit var model: Model
-    lateinit var RV: RVadaptar
+
+
 
     private lateinit var notes : List<Note>
 
@@ -30,14 +31,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        model= ViewModelProvider(this).get(Model::class.java)
-        model.getNotes().observe(this,{
-                notes -> RV.update(notes)
-        })
-
         edNewNote = findViewById(R.id.edNewNote)
         btnSubmit = findViewById(R.id.btnSubmit)
         rcv = findViewById(R.id.rcv)
+
+        model= ViewModelProvider(this).get(Model::class.java)
+        model.getNotes().observe(this,{
+                notes ->
+            rcv.adapter = RVadaptar(this,notes)
+            rcv.layoutManager = LinearLayoutManager(this)
+        })
+
+
 
         notes = listOf()
 
@@ -48,10 +53,6 @@ class MainActivity : AppCompatActivity() {
             edNewNote.clearFocus()
 
         }
-
-
-        rcv.adapter =  RVadaptar(this)
-        rcv.layoutManager= LinearLayoutManager(this)
     }
     fun dilogfun(id:Int) {
         val build = AlertDialog.Builder(this)
