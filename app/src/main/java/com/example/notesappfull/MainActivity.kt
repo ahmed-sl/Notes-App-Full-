@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
@@ -20,12 +21,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var rcv : RecyclerView
     lateinit var edNewNote: EditText
     lateinit var btnSubmit: Button
-    private lateinit var dbhelp : DBhelper
-
-
-    private val noteDao by lazy { NoteDatabase.getDatabase(this).noteDao() }
-    private val repository by lazy { NoteRepo(noteDao) }
-
+    lateinit var model: Model
+    lateinit var RV: RVadaptar
 
     private lateinit var notes : List<Note>
 
@@ -33,81 +30,45 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        model= ViewModelProvider(this).get(Model::class.java)
+        model.getNotes().observe(this,{
+                notes -> RV.update(notes)
+        })
+
         edNewNote = findViewById(R.id.edNewNote)
         btnSubmit = findViewById(R.id.btnSubmit)
-        dbhelp = DBhelper(this)
         rcv = findViewById(R.id.rcv)
 
         notes = listOf()
 
         btnSubmit.setOnClickListener {
-            addNote(edNewNote.text.toString())
+
+            model.addNote(edNewNote.text.toString())
             edNewNote.text.clear()
             edNewNote.clearFocus()
-            updateRV()
+
         }
-        getItemsList()
-        updateRV()
+
+
+        rcv.adapter =  RVadaptar(this)
+        rcv.layoutManager= LinearLayoutManager(this)
     }
-
-    fun updateRV(){
-        rcv.adapter = RVadaptar(this,notes)
-        rcv.layoutManager = LinearLayoutManager(this)
-
-    }
-
-    private fun getItemsList(){
-        CoroutineScope(Dispatchers.IO).launch {
-            val data = async {
-                repository.getNotes
-            }.await()
-            if(data.isNotEmpty()){
-                notes = data
-                updateRV()
-            }else{
-                Log.e("MainActivity", "Unable to get data", )
-            }
-        }
-    }
-
-    private fun addNote(noteText: String){
-        CoroutineScope(Dispatchers.IO).launch {
-            repository.addNote(Note(0, noteText))
-        }
-    }
-
-    private fun editNote(noteID: Int, noteText: String){
-        CoroutineScope(Dispatchers.IO).launch {
-            repository.updateNote(Note(noteID,noteText))
-        }
-    }
-
-    fun deleteNote(noteID: Int){
-        CoroutineScope(Dispatchers.IO).launch {
-            repository.deleteNote(Note(noteID,""))
-        }
-    }
-
-    fun raiseDialog(id: Int){
-        val dialogBuilder = androidx.appcompat.app.AlertDialog.Builder(this)
-        val updatedNote = EditText(this)
-        updatedNote.hint = "Enter new text"
-        dialogBuilder
-            .setCancelable(false)
-            .setPositiveButton("Save", DialogInterface.OnClickListener {
-
-                    _, _ ->
-                run {
-                    editNote(id, updatedNote.text.toString())
-                    updateRV()
-                }
+    fun dilogfun(id:Int) {
+        val build = AlertDialog.Builder(this)
+        val update = EditText(this)
+        update.hint = " enter new note for update "
+        build.setCancelable(false)
+            .setPositiveButton("save", DialogInterface.OnClickListener() { _, _ ->
+                model.editNote(id, update.text.toString())
             })
-            .setNegativeButton("Cancel", DialogInterface.OnClickListener {
-                    dialog, _ -> dialog.cancel()
+            .setNegativeButton("deny", DialogInterface.OnClickListener {
+                    dialog,_->dialog.cancel()
             })
-        val alert = dialogBuilder.create()
+        val alert = build.create()
         alert.setTitle("Update Note")
-        alert.setView(updatedNote)
+        alert.setView(update)
         alert.show()
     }
+
+
 }

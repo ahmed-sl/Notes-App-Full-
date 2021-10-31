@@ -8,8 +8,9 @@ import com.example.notesappfull.databinding.ItemRowBinding
 
 
 
-class RVadaptar(val acticvity: MainActivity, var lis: List<Note>):
+class RVadaptar(val acticvity: MainActivity):
     RecyclerView.Adapter<RVadaptar.ItemHold>() {
+    private var notee = emptyList<Note>()
 
     class ItemHold (val binding: ItemRowBinding): RecyclerView.ViewHolder(binding.root)
 
@@ -23,19 +24,20 @@ class RVadaptar(val acticvity: MainActivity, var lis: List<Note>):
     }
 
     override fun onBindViewHolder(holder: ItemHold, position: Int) {
-        val notes = lis[position]
+        val notes = notee[position]
         holder.binding.apply {
             txtNote.text = notes.noteText
-            if(position%2==0){llNoteHolder.setBackgroundColor(Color.GRAY)}
             ibEditNote.setOnClickListener {
-                acticvity.raiseDialog(notes.id)
+                acticvity.dilogfun(notes.id)
             }
             ibDeleteNote.setOnClickListener {
-                acticvity.deleteNote(notes.id)
-            }
+                acticvity.model.deleteNote(notes.id)
+            } } }
 
-        }
+    override fun getItemCount() = notee.size
+    fun update(notes: List<Note>){
+        println("data updated")
+        this.notee = notes
+        notifyDataSetChanged()
     }
-
-    override fun getItemCount() = lis.size
 }

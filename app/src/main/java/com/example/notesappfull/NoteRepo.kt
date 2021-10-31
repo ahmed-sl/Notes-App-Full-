@@ -1,8 +1,10 @@
 package com.example.notesappfull
 
+import androidx.lifecycle.LiveData
+
 class NoteRepo (private val noteDao: NoteDao) {
 
-    val getNotes: List<Note> = noteDao.getNotes()
+    val getNotes: LiveData<List<Note>> = noteDao.getNotes()
 
     suspend fun addNote(note: Note){
         noteDao.addNote(note)
