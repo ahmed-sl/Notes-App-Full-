@@ -2,6 +2,7 @@ package com.example.notesappfull
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.notesappfull.RomDB.Note
 
 @Dao
 interface NoteDao {

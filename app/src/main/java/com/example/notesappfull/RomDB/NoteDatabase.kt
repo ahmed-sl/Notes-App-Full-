@@ -1,9 +1,10 @@
-package com.example.notesappfull
+package com.example.notesappfull.RomDB
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.notesappfull.NoteDao
 
 @Database(entities = [Note::class], version = 1, exportSchema = false)
 abstract class NoteDatabase: RoomDatabase() {
@@ -14,7 +15,7 @@ abstract class NoteDatabase: RoomDatabase() {
         @Volatile  // writes to this field are immediately visible to other threads
         private var INSTANCE: NoteDatabase? = null
 
-        fun getDatabase(context: Context): NoteDatabase{
+        fun getDatabase(context: Context): NoteDatabase {
             val tempInstance = INSTANCE
             if(tempInstance != null){
                 return tempInstance

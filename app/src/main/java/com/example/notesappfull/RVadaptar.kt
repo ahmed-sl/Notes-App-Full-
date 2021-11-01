@@ -4,11 +4,12 @@ package com.example.notesappfull
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.notesappfull.RomDB.Note
 import com.example.notesappfull.databinding.ItemRowBinding
 
 
 
-class RVadaptar(val acticvity: MainActivity,val list:List<Note>):
+class RVadaptar(val acticvity: MainActivity, val NoteList:ArrayList<List<Any>>):
     RecyclerView.Adapter<RVadaptar.ItemHold>() {
 
 
@@ -24,16 +25,19 @@ class RVadaptar(val acticvity: MainActivity,val list:List<Note>):
     }
 
     override fun onBindViewHolder(holder: ItemHold, position: Int) {
-        val notes = list[position]
+        val id = NoteList[position][0]
+        val notes = NoteList[position][1]
         holder.binding.apply {
-            txtNote.text = notes.noteText
+            txtNote.text = "Note $position:"
+            txt2.text = notes.toString()
             ibEditNote.setOnClickListener {
-                acticvity.dilogfun(notes.id)
+                acticvity.update(id.toString())
             }
             ibDeleteNote.setOnClickListener {
-                acticvity.model.deleteNote(notes.id)
-            } } }
+                acticvity.delNote(id.toString())
+            }
+        }}
 
-    override fun getItemCount() = list.size
+    override fun getItemCount() = NoteList.size
 
 }
