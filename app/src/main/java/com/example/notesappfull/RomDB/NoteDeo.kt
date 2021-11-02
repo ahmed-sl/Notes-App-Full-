@@ -7,16 +7,20 @@ import com.example.notesappfull.RomDB.Note
 @Dao
 interface NoteDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addNote(note: Note)
+    //method to get all data:
+    @Query("SELECT * FROM NotesTable")
+    fun getAll(): List<Note>
 
-    @Query("SELECT * FROM NotesTable ORDER BY id ASC")
-    fun getNotes(): LiveData<List<Note>>
+    //insert a row into the table
+    @Insert
+    fun insertNote(note:Note)
 
+    //update note
     @Update
-    suspend fun updateNote(note: Note)
+    fun updateNote(note: Note)
 
+    //delete note row
     @Delete
-    suspend fun deleteNote(note: Note)
+    fun delNote(noteid: Note)
 
 }

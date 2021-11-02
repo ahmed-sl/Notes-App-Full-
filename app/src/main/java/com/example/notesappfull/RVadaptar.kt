@@ -9,7 +9,7 @@ import com.example.notesappfull.databinding.ItemRowBinding
 
 
 
-class RVadaptar(val acticvity: MainActivity, val NoteList:ArrayList<List<Any>>):
+class RVadaptar(val acticvity: Fragment_list, val NoteList:List<Note>):
     RecyclerView.Adapter<RVadaptar.ItemHold>() {
 
 
@@ -25,18 +25,24 @@ class RVadaptar(val acticvity: MainActivity, val NoteList:ArrayList<List<Any>>):
     }
 
     override fun onBindViewHolder(holder: ItemHold, position: Int) {
-        val id = NoteList[position][0]
-        val notes = NoteList[position][1]
+        val noteObject = NoteList[position]
+        var id = NoteList[position].id
+        var note = NoteList[position].note
+
         holder.binding.apply {
-            txtNote.text = "Note $position:"
-            txt2.text = notes.toString()
-            ibEditNote.setOnClickListener {
-                acticvity.update(id.toString())
+            txtNote.text = "Note $id: "
+            txt2.text = note
+
+            ibEditNote.setOnClickListener() {
+                acticvity.goFragmentUpdate(id)
             }
-            ibDeleteNote.setOnClickListener {
-                acticvity.delNote(id.toString())
+
+            ibDeleteNote.setOnClickListener() {
+                acticvity.delNote(noteObject)
             }
-        }}
+
+        }
+    }
 
     override fun getItemCount() = NoteList.size
 
